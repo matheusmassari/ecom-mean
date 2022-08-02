@@ -10,8 +10,8 @@ import morgan from "morgan";
 import connectDB from "./db/conect.js";
 
 //Routers
-import productsRouter from "./routes/productRoutes.js"
-
+import productsRouter from "./routes/productRoutes.js";
+import categoriesRouter from "./routes/categoryRoutes.js";
 
 if (process.env.NODE_ENV !== "production") {
     app.use(morgan("dev"));
@@ -23,8 +23,8 @@ const port = process.env.PORT || 4000;
 //Middleware
 app.use(express.json());
 
-app.use(`${api}/products`, productsRouter)
-
+app.use(`${api}/products`, productsRouter);
+app.use(`${api}/categories`, categoriesRouter);
 
 const start = async () => {
     try {
