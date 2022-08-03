@@ -13,18 +13,26 @@ import connectDB from "./db/conect.js";
 import productsRouter from "./routes/productRoutes.js";
 import categoriesRouter from "./routes/categoryRoutes.js";
 
+//Middleware
+import notFoundMiddleware from "./middleware/not-found.js";
+import errorHandlerMiddleware from "./middleware/error-handler.js";
+
 if (process.env.NODE_ENV !== "production") {
     app.use(morgan("dev"));
 }
+app.use(express.json());
 
 const api = process.env.API_URL;
 const port = process.env.PORT || 4000;
 
-//Middleware
-app.use(express.json());
+
+
 
 app.use(`${api}/products`, productsRouter);
 app.use(`${api}/categories`, categoriesRouter);
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 
 const start = async () => {
     try {

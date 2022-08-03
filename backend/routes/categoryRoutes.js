@@ -1,26 +1,11 @@
 import express from "express";
 const router = express.Router();
-import Category from "../models/Category.js";
+import {
+    getAllCategories,
+    postCategory,
+} from "../controllers/categoryController.js";
 
-router.get(`/`, async (req, res) => {
-    const CategoryList = await Category.find();
-    if (!CategoryList) {
-        return res.status(500).json({ success: false });
-    }
-    res.send(CategoryList);
-});
-
-router.post(`/`, async (req, res) => {
-    let category = new Category({
-        name: req.body.name,
-        icon: req.body.icon,
-        color: req.body.color
-    })
-    category = await category.save()
-    if(!category) {
-        return res.status(404).send("the category cant be posted!")
-    }
-    res.send(category);
-});
+router.route("/getAll").get(getAllCategories);
+router.route("/postCategory").post(postCategory);
 
 export default router;
