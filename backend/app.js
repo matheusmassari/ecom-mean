@@ -5,7 +5,7 @@ dotenv.config();
 import cors from "cors";
 app.use(cors());
 import morgan from "morgan";
-
+import "express-async-errors";
 // DB Connect
 import connectDB from "./db/conect.js";
 
@@ -24,8 +24,6 @@ app.use(express.json());
 
 const api = process.env.API_URL;
 const port = process.env.PORT || 4000;
-
-
 
 
 app.use(`${api}/products`, productsRouter);

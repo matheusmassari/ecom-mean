@@ -1,29 +1,18 @@
 import express from "express";
 const router = express.Router();
-import Product from "../models/Product.js"
+import {
+    getAllProducts,
+    getSingleProductDetails,
+    postProduct,
+    updateProduct,
+    deleteProduct,
+} from "../controllers/productController.js";
 
-router.get(`/`, async (req, res) => {
-    const productList = await Product.find();
-    res.send(productList);
-});
+router.route("/").get(getAllProducts).post(postProduct);
+router
+    .route("/:id")
+    .get(getSingleProductDetails)
+    .put(updateProduct)
+    .delete(deleteProduct);
 
-router.post(`/`, (req, res) => {
-    const product = new Product({
-        name: req.body.name,
-        image: req.body.image,
-        countInStock: req.body.countInStock,
-    });
-    product
-        .save()
-        .then((createdProduct) => {
-            res.status(201).json(createdProduct);
-        })
-        .catch((err) => {
-            res.status(500).json({
-                error: err,
-                success: false,
-            });
-        });
-});
-
-export default router
+export default router;
