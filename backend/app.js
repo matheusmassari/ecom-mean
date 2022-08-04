@@ -12,6 +12,8 @@ import connectDB from "./db/conect.js";
 //Routers
 import productsRouter from "./routes/productRoutes.js";
 import categoriesRouter from "./routes/categoryRoutes.js";
+import userRouter from "./routes/userRoutes.js";
+import orderRouter from "./routes/orderRoutes.js";
 
 //Middleware
 import notFoundMiddleware from "./middleware/not-found.js";
@@ -25,9 +27,10 @@ app.use(express.json());
 const api = process.env.API_URL;
 const port = process.env.PORT || 4000;
 
-
 app.use(`${api}/products`, productsRouter);
 app.use(`${api}/categories`, categoriesRouter);
+app.use(`${api}/users`, userRouter);
+app.use(`${api}/orders`, orderRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
