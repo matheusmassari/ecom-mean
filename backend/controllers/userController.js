@@ -6,10 +6,11 @@ import {
     UnauthenticatedError,
 } from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const getAllUsers = async (req, res) => {
-    const userList = await User.find().select("name phone email");
+    const userList = await User.find().select("name phone email isAdmin");
     if (!userList) {
         throw new GenericError("Something went wrong, try again later.");
     }
@@ -18,7 +19,7 @@ const getAllUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
     const singleUserInfo = await User.findById(req.params.id).select(
-        "name phone email"
+        "name phone email passwordHash"
     );
     if (!singleUserInfo) {
         throw new NotFoundError("User not found.");
@@ -50,10 +51,52 @@ const registerUser = async (req, res) => {
     res.status(StatusCodes.OK).send(user);
 };
 
-const loginUser = async (req, res) => {};
+const loginUser = async (req, res) => {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+        throw new NotFoundError("User not found");
+    }
+
+    if (user && bcrypt.compareSync(req.body.password, user.passwordHash)) {
+        const token = jwt.sign(
+            { userId: user._id, isAdmin: user.isAdmin },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: process.env.JWT_LIFETIME,
+            }
+        );
+
+        return res
+            .status(StatusCodes.OK)
+            .send({ user: user.email, token: token });
+    } else {
+        throw new BadRequestError("Invalid credentials.");
+    }
+};
 
 const updateUser = async (req, res) => {
-    
+    const existingUser = await User.findById(req.params.id);
+    let newPassword;
+    if (req.body.password) {
+        newPassword = bcrypt.hashSync(req.body.password, 10);
+    } else {
+        newPassword = existingUser.passwordHash;
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, {
+        name: req.body.name,
+        email: req.body.email,
+        passwordHash: newPassword,
+        phone: req.body.phone,
+        isAdmin: req.body.isAdmin,
+        apartment: req.body.apartment,
+        zip: req.body.zip,
+        city: req.body.city,
+        country: req.body.country,
+    });
+
+    res.send(user);
 };
 
 export { registerUser, loginUser, getSingleUser, getAllUsers, updateUser };

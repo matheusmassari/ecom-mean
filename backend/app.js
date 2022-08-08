@@ -19,10 +19,14 @@ import orderRouter from "./routes/orderRoutes.js";
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 
+//JWT Helper
+import { authJwt } from "./helpers/jwt.js";
+
 if (process.env.NODE_ENV !== "production") {
     app.use(morgan("dev"));
 }
 app.use(express.json());
+app.use(authJwt());
 
 const api = process.env.API_URL;
 const port = process.env.PORT || 4000;

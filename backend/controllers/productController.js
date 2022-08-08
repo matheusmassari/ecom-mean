@@ -21,9 +21,7 @@ const getAllProducts = async (req, res) => {
 };
 
 const postProduct = async (req, res) => {
-    const category = await Category.findById(req.body.category).populate(
-        "category"
-    );
+    const category = await Category.findById(req.body.category)
 
     if (!category) {
         throw new BadRequestError("Invalid category");
@@ -123,7 +121,7 @@ const filterByCategories = async (req, res) => {
     if (req.query.categories) {
         filter = req.query.categories.split(",");
     }
-    const productList = await Product.find({category: filter}).populate(
+    const productList = await Product.find({ category: filter }).populate(
         "category"
     );
 

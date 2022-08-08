@@ -8,7 +8,9 @@ import {
     updateUser,
 } from "../controllers/userController.js";
 
-router.route("/").get(getAllUsers).post(registerUser);
+router.route("/").get(getAllUsers);
 router.route("/:id").get(getSingleUser).put(updateUser);
+router.route("/login").post(loginUser);
+router.route("/register").post(registerUser);
 
 export default router;
