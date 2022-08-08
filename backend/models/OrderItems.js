@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
 import Product from "./Product.js";
 
-const OrderItemsSchema = new mongoose.Schema({
-    name: String,
-    product: Product,
-    icon: String,
-    image: String,
+const OrderItemSchema = new mongoose.Schema({
+    quantity: {
+        type: Number,
+        required: true
+    },
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product"
+    }
 });
 
-export default mongoose.model("OrderItems", OrderItemsSchema);
+export default mongoose.model("OrderItem", OrderItemSchema);

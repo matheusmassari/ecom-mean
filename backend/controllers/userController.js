@@ -99,4 +99,31 @@ const updateUser = async (req, res) => {
     res.send(user);
 };
 
-export { registerUser, loginUser, getSingleUser, getAllUsers, updateUser };
+const getCount = async (req, res) => {
+    const userCount = await User.countDocuments();
+    if (!userCount) {
+        return new NotFoundError("Something went wront, try again later.");
+    }
+    res.status(StatusCodes.OK).send({ userCount: userCount });
+};
+
+const deleteUser = async (req, res) => {
+    const userToBeDeleted = await User.findByIdAndRemove(req.params.id);
+
+    if (userToBeDeleted) {
+        res.status(StatusCodes.OK).send("User succesfully deleted.");
+    }
+    if(!userToBeDeleted) {
+        throw new BadRequestError("User not found.")
+    }
+};
+
+export {
+    registerUser,
+    loginUser,
+    getSingleUser,
+    getAllUsers,
+    updateUser,
+    getCount,
+    deleteUser
+};
