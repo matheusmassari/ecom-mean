@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "./User";
+
 
 const OrderSchema = new mongoose.Schema({
     orderItems: [

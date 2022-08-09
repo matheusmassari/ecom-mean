@@ -2,8 +2,7 @@ import User from "../models/User.js";
 import {
     BadRequestError,
     GenericError,
-    NotFoundError,
-    UnauthenticatedError,
+    NotFoundError,    
 } from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcryptjs";
