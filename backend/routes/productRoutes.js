@@ -43,7 +43,7 @@ router
 router
     .route("/:id")
     .get(getSingleProductDetails)
-    .put(updateProduct)
+    .put(uploadOptions.array("images", 10), updateProduct)
     .delete(deleteProduct);
 router
     .route("/gallery-images/:id")

@@ -22,11 +22,22 @@ import errorHandlerMiddleware from "./middleware/error-handler.js";
 //JWT Helper
 import { authJwt } from "./helpers/jwt.js";
 
+//Path e __dirname
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+
+// 👇️ "/home/john/Desktop/javascript"
+const __dirname = path.dirname(__filename);
+/////////////
+
 if (process.env.NODE_ENV !== "production") {
     app.use(morgan("dev"));
 }
 app.use(express.json());
 app.use(authJwt());
+app.use("/public/uploads",express.static(__dirname+"/public/uploads"));
 
 const api = process.env.API_URL;
 const port = process.env.PORT || 4000;

@@ -34,7 +34,7 @@ const postProduct = async (req, res) => {
         throw new BadRequestError("File is required");
     }
     const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/upload`;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
 
     let product = new Product({
         name: req.body.name,
@@ -66,19 +66,21 @@ const uploadGallery = async (req, res) => {
         throw new BadRequestError("The ID provided is not valid.");
     }
     const files = req.files;
-    const basePath = `${req.protocol}://${req.get("host")}/public/upload`;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
     let imagesPaths = [];
     if (files) {
-        files.map(
-            (file) => {
-                imagesPaths.push(`${basePath}${file.fileName}`);
-            },
-            { new: true }
-        );
+        files.map((file) => {
+            console.log(file)
+            imagesPaths.push(`${basePath}${file.filename}`);
+        });
     }
-    const product = await Product.findByIdAndUpdate(req.params.id, {
-        images: imagesPaths,
-    });
+    const product = await Product.findByIdAndUpdate(
+        req.params.id,
+        {
+            images: imagesPaths,
+        },
+        { new: true }
+    );
     if (!product) {
         throw new GenericError("Couldnt upload the images, try again later.");
     }
@@ -95,13 +97,29 @@ const updateProduct = async (req, res) => {
         throw new BadRequestError("Invalid category");
     }
 
-    const product = await Product.findByIdAndUpdate(
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+        throw new BadRequestError("Invalid product");
+    }
+
+    const file = req.file;
+    let imagepath;
+
+    if (file) {
+        const fileName = file.fileName;
+        const basePath = `${req.protocol}://${req.get("host")}/public/upload`;
+        imagepath = `${basePath}${fileName}`;
+    } else {
+        imagepath = product.image;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         {
             name: req.body.name,
             description: req.body.description,
             richDescription: req.body.richDescription,
-            image: req.body.image,
+            image: imagepath,
             brand: req.body.brand,
             price: req.body.price,
             category: req.body.category,
@@ -112,10 +130,10 @@ const updateProduct = async (req, res) => {
         },
         { new: true }
     );
-    if (!product) {
+    if (!updatedProduct) {
         throw new NotFoundError("Couldn't find the product for the given ID");
     }
-    res.status(StatusCodes.OK).send(product);
+    res.status(StatusCodes.OK).send(updatedProduct);
 };
 
 const deleteProduct = async (req, res) => {
