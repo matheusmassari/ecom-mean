@@ -1,6 +1,10 @@
 import Product from "../models/Product.js";
 import Category from "../models/Category.js";
-import { BadRequestError, NotFoundError } from "../errors/index.js";
+import {
+    BadRequestError,
+    GenericError,
+    NotFoundError,
+} from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
 
@@ -21,17 +25,22 @@ const getAllProducts = async (req, res) => {
 };
 
 const postProduct = async (req, res) => {
-    const category = await Category.findById(req.body.category)
-
+    const category = await Category.findById(req.body.category);
+    const file = req.file;
     if (!category) {
         throw new BadRequestError("Invalid category");
     }
+    if (!file) {
+        throw new BadRequestError("File is required");
+    }
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/upload`;
 
     let product = new Product({
         name: req.body.name,
         description: req.body.description,
         richDescription: req.body.richDescription,
-        image: req.body.image,
+        image: `${basePath}${fileName}`,
         brand: req.body.brand,
         price: req.body.price,
         category: req.body.category,
@@ -50,6 +59,30 @@ const postProduct = async (req, res) => {
     }
 
     res.status(StatusCodes.CREATED).send(product);
+};
+
+const uploadGallery = async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+        throw new BadRequestError("The ID provided is not valid.");
+    }
+    const files = req.files;
+    const basePath = `${req.protocol}://${req.get("host")}/public/upload`;
+    let imagesPaths = [];
+    if (files) {
+        files.map(
+            (file) => {
+                imagesPaths.push(`${basePath}${file.fileName}`);
+            },
+            { new: true }
+        );
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, {
+        images: imagesPaths,
+    });
+    if (!product) {
+        throw new GenericError("Couldnt upload the images, try again later.");
+    }
+    res.status(StatusCodes.OK).send(product);
 };
 
 const updateProduct = async (req, res) => {
@@ -141,4 +174,5 @@ export {
     getCount,
     getFeatured,
     filterByCategories,
+    uploadGallery,
 };

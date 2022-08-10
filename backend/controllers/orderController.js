@@ -125,17 +125,17 @@ const getOrderCount = async (req, res) => {
 };
 
 const getPersonalOrders = async (req, res) => {
-    const orderList = await Order.find({ user: req.params.userid })
+    const personalOrderList = await Order.find({ user: req.params.userid })
         .populate({
             path: "orderItems",
             populate: "product",
         })
         .sort({ dateOrdered: -1 });
 
-    if (!orderList) {
+    if (!personalOrderList) {
         throw new NotFoundError("Couldn't get personal orders list.");
     }
-    res.status(StatusCodes.OK).send(orderList);
+    res.status(StatusCodes.OK).send(personalOrderList);
 };
 
 export {
