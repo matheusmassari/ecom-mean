@@ -18,7 +18,7 @@ const getAllUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
     const singleUserInfo = await User.findById(req.params.id).select(
-        "name phone email passwordHash"
+        "name phone email passwordHash isAdmin apartment zip city country street"
     );
     if (!singleUserInfo) {
         throw new NotFoundError("User not found.");
@@ -42,6 +42,7 @@ const registerUser = async (req, res) => {
         zip: req.body.zip,
         city: req.body.city,
         country: req.body.country,
+        street: req.body.street,
     });
 
     if (!user) {
@@ -93,9 +94,11 @@ const updateUser = async (req, res) => {
         zip: req.body.zip,
         city: req.body.city,
         country: req.body.country,
-    });
-
-    res.send(user);
+    });    
+    if(!user) {
+        throw new BadRequestError("User not found.");
+    }
+    res.status(StatusCodes.OK).send(user);    
 };
 
 const getCount = async (req, res) => {
