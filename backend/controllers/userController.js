@@ -2,14 +2,14 @@ import User from "../models/User.js";
 import {
     BadRequestError,
     GenericError,
-    NotFoundError,    
+    NotFoundError,
 } from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const getAllUsers = async (req, res) => {
-    const userList = await User.find().select("name phone email isAdmin");
+    const userList = await User.find().select("name phone email isAdmin country");
     if (!userList) {
         throw new GenericError("Something went wrong, try again later.");
     }
@@ -77,13 +77,13 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const existingUser = await User.findById(req.params.id);
+
     let newPassword;
     if (req.body.password) {
         newPassword = bcrypt.hashSync(req.body.password, 10);
     } else {
         newPassword = existingUser.passwordHash;
     }
-
     const user = await User.findByIdAndUpdate(req.params.id, {
         name: req.body.name,
         email: req.body.email,
@@ -94,11 +94,12 @@ const updateUser = async (req, res) => {
         zip: req.body.zip,
         city: req.body.city,
         country: req.body.country,
-    });    
-    if(!user) {
+        street: req.body.street,
+    });
+    if (!user) {
         throw new BadRequestError("User not found.");
     }
-    res.status(StatusCodes.OK).send(user);    
+    res.status(StatusCodes.OK).send(user);
 };
 
 const getCount = async (req, res) => {
@@ -111,12 +112,11 @@ const getCount = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     const userToBeDeleted = await User.findByIdAndRemove(req.params.id);
-
     if (userToBeDeleted) {
-        res.status(StatusCodes.OK).send("User succesfully deleted.");
+        res.status(StatusCodes.OK).send({ message: "User deleted." });
     }
-    if(!userToBeDeleted) {
-        throw new BadRequestError("User not found.")
+    if (!userToBeDeleted) {
+        throw new BadRequestError("User not found.");
     }
 };
 
@@ -127,5 +127,5 @@ export {
     getAllUsers,
     updateUser,
     getCount,
-    deleteUser
+    deleteUser,
 };

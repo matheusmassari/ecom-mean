@@ -15,7 +15,13 @@ const getAllOrders = async (req, res) => {
 const getSingleOrder = async (req, res) => {
     const singleOrder = await Order.findById(req.params.id)
         .populate("user", "name")
-        .populate({ path: "orderItems", populate: "product" });
+        .populate({
+            path: "orderItems",
+            populate: {
+                path: "product",
+                populate: "category",
+            },
+        });
 
     if (!singleOrder) {
         throw new NotFoundError(
