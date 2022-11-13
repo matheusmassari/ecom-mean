@@ -5,7 +5,7 @@ const errorHandlerMiddleware = (err, req, res, next) => {
         statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
         msg: err.message || "Something went wrong, try again later.",
     };
-    if (err.name === "ValidationError") {
+    if (err.code === "ValidationError") {
         defaultError.statusCode = StatusCodes.BAD_REQUEST;
 
         //Separando mensagem de erro de cada campo do formulário

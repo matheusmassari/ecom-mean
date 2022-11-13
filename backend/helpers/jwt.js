@@ -16,13 +16,15 @@ export function authJwt() {
         isRevoked: isRevoked,
     }).unless({
         path: [
-            // { url: /\/public\/uploads(.*)/, methods: ["GET", "OPTION"] },
-            // { url: /\/api\/v1\/products(.*)/, methods: ["GET", "OPTION"] },
-            // { url: /\/api\/v1\/categories(.*)/, methods: ["GET", "OPTION"] },
-            // { url: `${api}/users`, methods: ["GET", "OPTION"] },
-            // `${api}/users/login`,
-            // `${api}/users/register`,
-            { url: /(.*)/ },
+            { url: /\/public\/uploads(.*)/, methods: ["GET", "OPTION"] },
+            { url: /\/api\/v1\/products(.*)/, methods: ["GET", "OPTION"] },
+            { url: /\/api\/v1\/categories(.*)/, methods: ["GET", "OPTION"] },
+            { url: /\/api\/v1\/orders(.*)/, methods: ["POST", "OPTION"] },
+            // { url: /\/api\/v1\/users(.*)/, methods: ["POST", "OPTION"] },
+            { url: `${api}/users`, methods: ["GET", "OPTION"] },
+            `${api}/users/login`,
+            `${api}/users/register`,
+            // { url: /(.*)/ },
         ],
     });
 }
